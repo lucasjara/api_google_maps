@@ -1,0 +1,67 @@
+{
+  "listado": [
+    {
+      "id": "https://image.flaticon.com/icons/svg/188/188234.svg",
+      "nombre": "Bulbasaur",
+      "tipo": "Planta",
+      "color": "green",
+      "img": "http://assets.pokemon.com/assets/cms2/img/pokedex/detail/001.png"
+    },
+    {
+      "id": "https://image.flaticon.com/icons/svg/188/188235.svg",
+      "nombre": "Ivysaur",
+      "tipo": "Planta",
+      "color": "green",
+      "img": "http://assets.pokemon.com/assets/cms2/img/pokedex/detail/002.png"
+    },
+    {
+      "id": "https://image.flaticon.com/icons/svg/188/188236.svg",
+      "nombre": "Venusaur",
+      "tipo": "Planta",
+      "color": "green",
+      "img": "http://assets.pokemon.com/assets/cms2/img/pokedex/detail/003.png"
+    },
+    {
+      "id": "https://image.flaticon.com/icons/svg/188/188237.svg",
+      "nombre": "Charmander",
+      "tipo": "Fuego",
+      "color": "red",
+      "img": "http://assets.pokemon.com/assets/cms2/img/pokedex/detail/004.png"
+    },
+    {
+      "id": "https://image.flaticon.com/icons/svg/188/188238.svg",
+      "nombre": "Charmeleon",
+      "tipo": "Fuego",
+      "color": "red",
+      "img": "http://assets.pokemon.com/assets/cms2/img/pokedex/detail/005.png"
+    },
+    {
+      "id": "https://image.flaticon.com/icons/svg/188/188239.svg",
+      "nombre": "Charizard",
+      "tipo": "Fuego",
+      "color": "red",
+      "img": "http://assets.pokemon.com/assets/cms2/img/pokedex/detail/006.png"
+    },
+    {
+      "id": "https://image.flaticon.com/icons/svg/188/188240.svg",
+      "nombre": "Squirtle",
+      "tipo": "Agua",
+      "color": "blue",
+      "img": "http://assets.pokemon.com/assets/cms2/img/pokedex/detail/007.png"
+    },
+    {
+      "id": "https://image.flaticon.com/icons/svg/188/188241.svg",
+      "nombre": "Wartortle",
+      "tipo": "Agua",
+      "color": "blue",
+      "img": "http://assets.pokemon.com/assets/cms2/img/pokedex/detail/008.png"
+    },
+    {
+      "id": "https://image.flaticon.com/icons/svg/188/188242.svg",
+      "nombre": "Blastoise",
+      "tipo": "Agua",
+      "color": "blue",
+      "img": "http://assets.pokemon.com/assets/cms2/img/pokedex/detail/009.png"
+    }
+  ]
+}
