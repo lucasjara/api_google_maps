@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pagina Interactivo JS</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous">
+</head>
+<body>
+<style>
+    #map {
+        width: 100%;
+        height: 600px;
+    }
+
+    h1 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+</style>
+<!--  Inicio Navbar -->
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">
+                <img alt="Brand"
+                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAB+0lEQVR4AcyYg5LkUBhG+1X2PdZGaW3btm3btm3bHttWrPomd1r/2Jn/VJ02TpxcH4CQ/dsuazWgzbIdrm9dZVd4pBz4zx2igTaFHrhvjneVXNHCSqIlFEjiwMyyyOBilRgGSqLNF1jnwNQdIvAt48C3IlBmHCiLQHC2zoHDu6zG1iXn6+y62ScxY9AODO6w0pvAqf23oSE4joOfH6OxfMoRnoGUm+de8wykbFt6wZtA07QwtNOqKh3ZbS3Wzz2F+1c/QJY0UCJ/J3kXWJfv7VhxCRRV1jGw7XI+gcO7rEFFRvdYxydwcPsVsC0bQdKScngt4iUTD4Fy/8p7PoHzRu1DclwmgmiqgUXjD3oTKHbAt869qdJ7l98jNTEblPTkXMwetpvnftA0LLHb4X8kiY9Kx6Q+W7wJtG0HR7fdrtYz+x7iya0vkEtUULIzCjC21wY+W/GYXusRH5kGytWTLxgEEhePPwhKYb7EK3BQuxWwTBuUkd3X8goUn6fMHLyTT+DCsQdAEXNzSMeVPAJHdF2DmH8poCREp3uwm7HsGq9J9q69iuunX6EgrwQVObjpBt8z6rdPfvE8kiiyhsvHnomrQx6BxYUyYiNS8f75H1w4/ISepDZLoDhNJ9cdNUquhRsv+6EP9oNH7Iff2A9g8h8CLt1gH0Qf9NMQAFnO60BJFQe0AAAAAElFTkSuQmCC"
+                     width="20">
+            </a>
+        </div>
+        <h1>Mapa Prueba Polygono</h1>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="panel-title pull-left"><p>Mapa JS</p></div>
+                <div class="panel-title pull-right"></div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Variables Globales
+    let latitud;
+    let longitud;
+    let ubicacion_actual;
+    let mapa;
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (posicion) {
+            iniciarMapa(posicion);
+            AgregarMarcadoresPolygono(mapa,posicion);
+        }, function error(error) {
+            console.log(error);
+        });
+    }else{
+        console.log('Navegador No soporta Geolocalización');
+    }
+    // Iniciar Mapa y Ubicacion Actual
+    const iniciarMapa = (posicion) => {
+        latitud = posicion.coords.latitude;
+        longitud = posicion.coords.longitude;
+        ubicacion_actual = {lat: latitud, lng: longitud};
+        mapa = new google.maps.Map(document.getElementById('map'), {
+            center: ubicacion_actual,
+            zoom: 8
+        });
+        let marker = new google.maps.Marker({
+            position: ubicacion_actual,
+            map: mapa,
+            title: 'Ubicacion Actual'
+        });
+        let infowindow = new google.maps.InfoWindow({
+            content: FormatoInicial("Ubicacion Actual", "chibi.jpg")
+        });
+        marker.addListener('click', function () {
+            infowindow.open(mapa, marker);
+        });
+    };
+    const AgregarMarcadoresPolygono = (mapa, posicion) => {
+        // Define the LatLng coordinates for the polygon's path.
+        var triangleCoords = [
+            {lat: posicion.coords.latitude+0.4, lng: posicion.coords.longitude},
+            {lat: posicion.coords.latitude-0.3, lng: posicion.coords.longitude+0.5},
+            {lat: posicion.coords.latitude-0.3, lng: posicion.coords.longitude-0.5},
+        ];
+        // Construct the polygon.
+        var bermudaTriangle = new google.maps.Polygon({
+            paths: triangleCoords,
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35
+        });
+        bermudaTriangle.setMap(mapa);
+        /*
+            let infowindow = new google.maps.InfoWindow({
+                content: FormatoTarjeta(titulo, url, tipo)
+            });
+            let marker = new google.maps.Marker({
+                position: ubicacion_actual,
+                map: mapa,
+                title: titulo
+            });
+            marker.addListener('click', function () {
+                infowindow.open(mapa, marker);
+            });
+        */
+    };
+    const FormatoTarjeta = (nombre, url, tipo) => {
+        const contenidoTarjeta =
+            '<div class="panel panel-default">' +
+            '<div class="panel-body">' +
+            '<img src="' + url + '"  width="150" height="100" alt="' + nombre + '">' +
+            '</div>' +
+            '<div class="panel-footer">' +
+            '<p style="text-align: center;">' + nombre + '</p>' +
+            '<hr style="margin: 0px; padding: 0px;">' +
+            '<p style="text-align: center;">Tipo: ' + tipo + '</p>' +
+            '</div>' +
+            '</div>';
+        return contenidoTarjeta;
+    };
+    const FormatoInicial = (nombre, url) => {
+        const contenidoTarjeta =
+            '<div class="panel panel-default">' +
+                '<div class="panel-body">' +
+                    '<img src="' + url + '"  width="50" height="50" alt="' + nombre + '">' +
+                '</div>' +
+                '<div class="panel-footer" style="margin: 0px;padding: 0px;">' +
+                    '<p style="text-align: center;">' + nombre + '</p>' +
+                    '<div class="clearfix"></div>' +
+                '</div>' +
+            '</div>';
+        return contenidoTarjeta;
+    };
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDp6WOLcXkuyv40roB6ejAjS6PXpEETAWs&" async defer></script>
+<!-- Fin Navbar -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>
