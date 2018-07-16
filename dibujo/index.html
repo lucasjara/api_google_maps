@@ -32,7 +32,7 @@
                      width="20">
             </a>
         </div>
-        <h1>Mapa Prueba Polygono</h1>
+        <h1>Mapa Dibujo Polygono Area de Trabajo</h1>
     </div>
 </nav>
 <div class="container">
@@ -58,7 +58,8 @@
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (posicion) {
             iniciarMapa(posicion);
-            AgregarMarcadoresPolygono(mapa,posicion);
+            AgregarDibujo();
+            //AgregarMarcadoresPolygono(mapa,posicion);
         }, function error(error) {
             console.log(error);
         });
@@ -72,7 +73,7 @@
         ubicacion_actual = {lat: latitud, lng: longitud};
         mapa = new google.maps.Map(document.getElementById('map'), {
             center: ubicacion_actual,
-            zoom: 8
+            zoom: 16
         });
         let marker = new google.maps.Marker({
             position: ubicacion_actual,
@@ -86,39 +87,41 @@
             infowindow.open(mapa, marker);
         });
     };
-    const AgregarMarcadoresPolygono = (mapa, posicion) => {
-        // Define the LatLng coordinates for the polygon's path.
-        var triangleCoords = [
-            {lat: posicion.coords.latitude+0.4, lng: posicion.coords.longitude},
-            {lat: posicion.coords.latitude-0.3, lng: posicion.coords.longitude+0.5},
-            {lat: posicion.coords.latitude-0.3, lng: posicion.coords.longitude-0.5},
-        ];
-        // Construct the polygon.
-        var bermudaTriangle = new google.maps.Polygon({
-            paths: triangleCoords,
-            strokeColor: '#FF0000',
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: '#FF0000',
-            fillOpacity: 0.35
+    const AgregarDibujo = () => {
+        let drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: google.maps.drawing.OverlayType.MARKER,
+            drawingControl: true,
+            drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_CENTER,
+                drawingModes: ['marker']
+            },
+            markerOptions: {icon: 'icon/charizard.png'},
+            circleOptions: {
+                fillColor: '#ffff00',
+                fillOpacity: 1,
+                strokeWeight: 5,
+                clickable: false,
+                editable: true,
+                zIndex: 1
+            }
         });
-        bermudaTriangle.setMap(mapa);
+        drawingManager.setMap(mapa);
     };
     const FormatoInicial = (nombre, url) => {
         const contenidoTarjeta =
             '<div class="panel panel-default">' +
-                '<div class="panel-body">' +
-                    '<img src="' + url + '"  width="50" height="50" alt="' + nombre + '">' +
-                '</div>' +
-                '<div class="panel-footer" style="margin: 0px;padding: 0px;">' +
-                    '<p style="text-align: center;">' + nombre + '</p>' +
-                    '<div class="clearfix"></div>' +
-                '</div>' +
+            '<div class="panel-body">' +
+            '<img src="' + url + '"  width="50" height="50" alt="' + nombre + '">' +
+            '</div>' +
+            '<div class="panel-footer" style="margin: 0px;padding: 0px;">' +
+            '<p style="text-align: center;">' + nombre + '</p>' +
+            '<div class="clearfix"></div>' +
+            '</div>' +
             '</div>';
         return contenidoTarjeta;
     };
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDp6WOLcXkuyv40roB6ejAjS6PXpEETAWs&" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDp6WOLcXkuyv40roB6ejAjS6PXpEETAWs&libraries=drawing" async defer></script>
 <!-- Fin Navbar -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>

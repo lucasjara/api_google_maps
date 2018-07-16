@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pagina Interactivo JS</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous">
+</head>
+<body>
+<style>
+    #map {
+        width: 100%;
+        height: 600px;
+    }
+
+    h1 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+</style>
+<!--  Inicio Navbar -->
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">
+                <img alt="Brand"
+                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAB+0lEQVR4AcyYg5LkUBhG+1X2PdZGaW3btm3btm3bHttWrPomd1r/2Jn/VJ02TpxcH4CQ/dsuazWgzbIdrm9dZVd4pBz4zx2igTaFHrhvjneVXNHCSqIlFEjiwMyyyOBilRgGSqLNF1jnwNQdIvAt48C3IlBmHCiLQHC2zoHDu6zG1iXn6+y62ScxY9AODO6w0pvAqf23oSE4joOfH6OxfMoRnoGUm+de8wykbFt6wZtA07QwtNOqKh3ZbS3Wzz2F+1c/QJY0UCJ/J3kXWJfv7VhxCRRV1jGw7XI+gcO7rEFFRvdYxydwcPsVsC0bQdKScngt4iUTD4Fy/8p7PoHzRu1DclwmgmiqgUXjD3oTKHbAt869qdJ7l98jNTEblPTkXMwetpvnftA0LLHb4X8kiY9Kx6Q+W7wJtG0HR7fdrtYz+x7iya0vkEtUULIzCjC21wY+W/GYXusRH5kGytWTLxgEEhePPwhKYb7EK3BQuxWwTBuUkd3X8goUn6fMHLyTT+DCsQdAEXNzSMeVPAJHdF2DmH8poCREp3uwm7HsGq9J9q69iuunX6EgrwQVObjpBt8z6rdPfvE8kiiyhsvHnomrQx6BxYUyYiNS8f75H1w4/ISepDZLoDhNJ9cdNUquhRsv+6EP9oNH7Iff2A9g8h8CLt1gH0Qf9NMQAFnO60BJFQe0AAAAAElFTkSuQmCC"
+                     width="20">
+            </a>
+        </div>
+        <h1>Mapa Posicion Actual</h1>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="panel-title pull-left"><p>Mapa JS</p></div>
+                <div class="panel-title pull-right"></div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let randoms = [];
+    let latitud;
+    let longitud;
+    let mapa;
+    let ubicacion_actual;
+    let poligono;
+    const conseguirPokemon = () => {
+        fetch('pokemon.json')
+            .then(response => response.json())
+            .then(lista => {
+                navigator.geolocation.getCurrentPosition(function (posicion) {
+                    iniciarMapa(posicion);
+                    // Recorrido de Cada Pokemon
+                    for (var i = 0; i < lista.listado.length; i++) {
+                        let ubicacion_actualizada = obtener_ubicacion_random(ubicacion_actual);
+                        let titulo = lista.listado[i].nombre;
+                        let tipo = lista.listado[i].tipo;
+                        let url = lista.listado[i].img;
+                        let icon = lista.listado[i].url;
+                        AgregarMarcadores(mapa, ubicacion_actualizada, titulo, tipo, url, icon);
+                    }
+                    AgregarDibujo();
+                }, function error(error) {
+                    console.log(error);
+                });
+
+            })
+    };
+    const iniciarMapa = (posicion) => {
+        latitud = posicion.coords.latitude;
+        longitud = posicion.coords.longitude;
+        ubicacion_actual = {lat: latitud, lng: longitud};
+        mapa = new google.maps.Map(document.getElementById('map'), {
+            center: ubicacion_actual,
+            zoom: 18
+        });
+        let marker = new google.maps.Marker({
+            position: ubicacion_actual,
+            map: mapa,
+            title: 'Ubicacion Actual'
+        });
+    };
+    const AgregarMarcadores = (mapa, ubicacion_actual, titulo, tipo, url, icon) => {
+        let infowindow = new google.maps.InfoWindow({
+            content: FormatoTarjeta(titulo, url, tipo)
+        });
+        let marker = new google.maps.Marker({
+            position: ubicacion_actual,
+            map: mapa,
+            title: titulo,
+            icon: icon
+        });
+        marker.addListener('click', function () {
+            infowindow.open(mapa, marker);
+        });
+        randoms.push([ubicacion_actual, titulo]);
+    };
+    const FormatoTarjeta = (nombre, url, tipo) => {
+        const contenidoTarjeta =
+            '<div class="panel panel-default"">' +
+            '<div class="panel-body">' +
+            '<img src="' + url + '"  width="150" height="100" alt="' + nombre + '">' +
+            '</div>' +
+            '<div class="panel-footer" style="margin:0px;padding: 0px;">' +
+            '<p style="text-align: center;margin:0px;">' + nombre + '</p>' +
+            '<hr style="margin: 0px; padding: 0px;">' +
+            '<p style="text-align: center;margin:0px;">Tipo: ' + tipo + '</p>' +
+            '<div class="clearfix"></div>' +
+            '</div>' +
+            '</div>';
+        return contenidoTarjeta;
+    };
+    const obtener_ubicacion_random = (ubicacion_actual) => {
+        let latitud_random = 0;
+        let long_random = 0;
+        let numero = 0;
+        do {
+            numero = Math.round(Math.random() * 10);
+            switch (numero) {
+                case 0:
+                    latitud_random = ubicacion_actual.lat + Math.random() * 0.001;
+                    long_random = ubicacion_actual.lng + Math.random() * 0.001;
+                    break;
+                case 1:
+                    latitud_random = ubicacion_actual.lat + Math.random() * 0.001;
+                    long_random = ubicacion_actual.lng - Math.random() * 0.001;
+                    break;
+                case 2:
+                    latitud_random = ubicacion_actual.lat - Math.random() * 0.001;
+                    long_random = ubicacion_actual.lng + Math.random() * 0.001;
+                    break;
+                case 3:
+                    latitud_random = ubicacion_actual.lat - Math.random() * 0.001;
+                    long_random = ubicacion_actual.lng - Math.random() * 0.001;
+                    break;
+                default:
+                    break;
+            }
+        } while (numero > 3)
+        let ubicacion_random = {lat: latitud_random, lng: long_random};
+        return ubicacion_random;
+    }
+    const AgregarDibujo = () => {
+        let drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: google.maps.drawing.OverlayType.POLYGON,
+            drawingControl: true,
+            drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_CENTER,
+                drawingModes: ['polygon']
+            },
+            markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
+            circleOptions: {
+                fillColor: '#ffff00',
+                fillOpacity: 1,
+                strokeWeight: 5,
+                clickable: false,
+                editable: true,
+                zIndex: 1
+            }
+        });
+        drawingManager.setMap(mapa);
+        infoWindow = new google.maps.InfoWindow;
+        google.maps.event.addListener(drawingManager, 'polygoncomplete', function (polygon) {
+            poligono = polygon;
+            poligono.addListener('click', showArrays)
+
+        });
+
+    };
+
+    function showArrays(event) {
+        var contentString = '<ul>Pokemon en Poligono:';
+        randoms.forEach(function (element) {
+            var posicion = new google.maps.LatLng(element[0]);
+            var validar = google.maps.geometry.poly.containsLocation(posicion, poligono);
+            if (validar) {
+                contentString += '<li>' + element[1] + '</li>';
+            }
+
+        });
+        contentString += '</ul>';
+        // Replace the info window's content and position.
+        infoWindow.setContent(contentString);
+        infoWindow.setPosition(event.latLng);
+        infoWindow.open(mapa);
+    }
+
+    conseguirPokemon();
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDp6WOLcXkuyv40roB6ejAjS6PXpEETAWs&libraries=drawing" async defer></script>
+<!-- Fin Navbar -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+</html>
